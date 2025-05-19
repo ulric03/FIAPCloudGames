@@ -1,25 +1,36 @@
 ﻿using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.Domain.Responses;
+using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FIAPCloudGames.WebAPI.Controllers;
 
-public class UsersController : ApiController
+public class UserController : ApiController
 {
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
     [HttpPost(ApiRoutes.Users.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(CreateUserRequest createUserRequest)
+    public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest)
     {
-        return Created();
+        var result = await _userService.Create(createUserRequest);
+        return Ok(result);
     }
 
     [HttpPut(ApiRoutes.Users.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update(int userId, UpdateUserRequest updateUserRequest)
+    public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserRequest updateUserRequest)
     {
+        updateUserRequest.Id = userId;
+        await _userService.Update(updateUserRequest);
         return Ok();
     }
 
@@ -28,7 +39,17 @@ public class UsersController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int userId)
     {
-        return Ok();
+        var result = await _userService.GetById(userId);
+        return Ok(result);
+    }
+
+    [HttpGet(ApiRoutes.Users.GetAll)]
+    [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _userService.GetAll();
+        return Ok(result);
     }
 
     [HttpPut(ApiRoutes.Users.Active)]
@@ -36,6 +57,7 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Active(int userId)
     {
+        await _userService.Active(userId);
         return Ok();
     }
 
@@ -44,6 +66,7 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Inactive(int userId)
     {
+        await _userService.Inactive(userId);
         return Ok();
     }
 }
