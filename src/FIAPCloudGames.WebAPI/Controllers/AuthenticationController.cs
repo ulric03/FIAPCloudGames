@@ -16,6 +16,13 @@ public class AuthenticationController : ApiController
         _userService = userService;
     }
 
+    /// <summary>
+    /// Realiza o login do usuário com e-mail e senha.
+    /// </summary>
+    /// <param name="loginRequest">Dados de autenticação (e-mail e senha).</param>
+    /// <returns>Retorna o token JWT em caso de sucesso.</returns>
+    /// <response code="200">Login realizado com sucesso. Retorna o token JWT.</response>
+    /// <response code="400">Erro de validação ou credenciais inválidas.</response>
     [HttpPost(ApiRoutes.Authentication.Login)]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
