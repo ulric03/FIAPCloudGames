@@ -9,10 +9,12 @@ namespace FIAPCloudGames.WebAPI.Controllers;
 public class UserController : ApiController
 {
     private readonly IUserService _userService;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -27,7 +29,14 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest)
     {
+        _logger.LogInformation("Iniciando criação de usuário | CorrelationId: {CorrelationId}", 
+            HttpContext.TraceIdentifier);
+
         var result = await _userService.Create(createUserRequest);
+
+        _logger.LogInformation("Usuário criado com sucesso | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, result.Id);
+
         return Ok(result);
     }
 
@@ -45,7 +54,15 @@ public class UserController : ApiController
     public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserRequest updateUserRequest)
     {
         updateUserRequest.Id = userId;
+
+        _logger.LogInformation("Iniciando atualização de usuário | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         await _userService.Update(updateUserRequest);
+
+        _logger.LogInformation("Usuário atualizado com sucesso | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         return Ok();
     }
 
@@ -61,7 +78,21 @@ public class UserController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int userId)
     {
+        _logger.LogInformation("Buscando usuário por ID | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         var result = await _userService.GetById(userId);
+
+        if (result == null)
+        {
+            _logger.LogWarning("Usuário não encontrado | CorrelationId: {CorrelationId} | UserId: {UserId}",
+                HttpContext.TraceIdentifier, userId);
+            return NotFound();
+        }
+
+        _logger.LogInformation("Usuário encontrado | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         return Ok(result);
     }
 
@@ -76,7 +107,14 @@ public class UserController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll()
     {
+        _logger.LogInformation("Iniciando recuperação de todos os usuários | CorrelationId: {CorrelationId}",
+            HttpContext.TraceIdentifier);
+
         var result = await _userService.GetAll();
+
+        _logger.LogInformation("Lista de usuários recuperada com sucesso | CorrelationId: {CorrelationId} | Quantidade: {Count}",
+            HttpContext.TraceIdentifier, result.Count());
+
         return Ok(result);
     }
 
@@ -92,7 +130,14 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Active(int userId)
     {
+        _logger.LogInformation("Iniciando ativação de usuário | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         await _userService.Active(userId);
+
+        _logger.LogInformation("Usuário ativado com sucesso | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         return Ok();
     }
 
@@ -108,7 +153,14 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Inactive(int userId)
     {
+        _logger.LogInformation("Iniciando inativação de usuário | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         await _userService.Inactive(userId);
+
+        _logger.LogInformation("Usuário inativado com sucesso | CorrelationId: {CorrelationId} | UserId: {UserId}",
+            HttpContext.TraceIdentifier, userId);
+
         return Ok();
     }
 }

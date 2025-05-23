@@ -10,10 +10,12 @@ namespace FIAPCloudGames.WebAPI.Controllers;
 public class AuthenticationController : ApiController
 {
     private readonly IUserService _userService;
+    private readonly ILogger<AuthenticationController> _logger;
 
-    public AuthenticationController(IUserService userService)
+    public AuthenticationController(IUserService userService, ILogger<AuthenticationController> logger)
     {
         _userService = userService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -28,7 +30,20 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
+        _logger.LogInformation("Tentativa de login iniciada | CorrelationId: {CorrelationId} | Email: {Email}",
+            HttpContext.TraceIdentifier, loginRequest.Email);
+
         var result = await _userService.Login(loginRequest);
+
+        if (result == null)
+        {
+            _logger.LogWarning("Falha no login | CorrelationId: {CorrelationId} | Email: {Email}",
+                HttpContext.TraceIdentifier, loginRequest.Email);
+            return BadRequest();
+        }
+
+        _logger.LogInformation("Login realizado com sucesso | CorrelationId: {CorrelationId} | Email: {Email}",
+            HttpContext.TraceIdentifier, loginRequest.Email);
 
         return Ok(result);
     }
