@@ -26,7 +26,7 @@ public class AuthenticationController : ApiController
         var validator = new LoginRequestValidator();
         var result = validator.Validate(loginRequest);
         if (!result.IsValid)
-            return Ok(result.ToDictionary());
+            return BadRequest(result.ToDictionary());
 
         var login = await _userService.Login(loginRequest);
         return Ok(login);

@@ -25,7 +25,7 @@ public class UserController : ApiController
         var validator = new CreateUserRequestValidator();
         var result = validator.Validate(createUserRequest);
         if (!result.IsValid)
-            return Ok(result.ToDictionary());
+            return BadRequest(result.ToDictionary());
 
         var user = await _userService.Create(createUserRequest);
         return Ok(user);
@@ -41,7 +41,7 @@ public class UserController : ApiController
         var validator = new UpdateUserRequestValidator();
         var result = validator.Validate(updateUserRequest);
         if (!result.IsValid)
-            return Ok(result.ToDictionary());
+            return BadRequest(result.ToDictionary());
 
         await _userService.Update(updateUserRequest);
         return Ok();
