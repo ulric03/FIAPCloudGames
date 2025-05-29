@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Repositores;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Infrastructure.Repositories;
@@ -15,7 +16,10 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         => await _dbSet.AddAsync(entity);
 
     public async Task UpdateAsync(TEntity entity)
-        => await Task.Run(() => { _dbSet.Update(entity); });
+        => await Task.Run(() => 
+        { 
+            _dbSet.Update(entity); 
+        });
 
     public void Delete(TEntity entity) 
         => _dbSet.Remove(entity);
@@ -26,21 +30,13 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate)
         => await _dbSet.AnyAsync(predicate);
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync(IEnumerable<Expression<Func<TEntity, bool>>>? predicates = null, IEnumerable<string>? entitiesToInclude = null)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
     {
-        //return await _entities
-        //    .Where(predicates)
-        //    .Include(entitiesToInclude)
-        //    .ToListAsync();
-
-        return null;
+        return await _dbSet.AsNoTracking().Where(predicate).ToListAsync();
     }
 
-    public async Task<TEntity> GetByIdAsync(int id, IEnumerable<string>? entitiesToInclude = null)
+    public async Task<TEntity?> GetByIdAsync(Expression<Func<TEntity, bool>> predicates)
     {
-        //return await _entities
-        //    .Include(entitiesToInclude)
-        //    .FirstOrDefaultAsync(e => e.Id == id);
-        return null;
+        return await _dbSet.FirstOrDefaultAsync(predicates);
     }
 }

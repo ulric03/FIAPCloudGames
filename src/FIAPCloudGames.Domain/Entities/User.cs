@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ public class User: BaseEntity
 
     public string Email { get; set; } = string.Empty;
 
+    public int UserType { get; set; }
+    
     public bool IsActive { get; set; }
 
     public DateTime CreatedBy { get; set; }

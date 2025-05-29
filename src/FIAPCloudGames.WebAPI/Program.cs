@@ -1,4 +1,9 @@
 using FIAPCloudGames.WebAPI;
+using FIAPCloudGames.Application;
+using FIAPCloudGames.Infrastructure;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,9 +13,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(Assembly.Load));
+
+// FIAP Cloud Games - data base
+builder.Services.AddDbContext<FCGContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 // FIAP Cloud Games
+builder.Services.AddApplication();
 builder.Services.AddPresentation();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

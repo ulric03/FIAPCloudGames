@@ -2,6 +2,7 @@
 using FIAPCloudGames.Domain.Responses;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
+using FIAPCloudGames.WebAPI.Validators;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +22,13 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        var result = await _userService.Login(loginRequest);
 
-        return Ok(result);
+        var validator = new LoginRequestValidator();
+        var result = validator.Validate(loginRequest);
+        if (!result.IsValid)
+            return Ok(result.ToDictionary());
+
+        var login = await _userService.Login(loginRequest);
+        return Ok(login);
     }
 }

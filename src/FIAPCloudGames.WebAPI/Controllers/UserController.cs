@@ -2,6 +2,8 @@
 using FIAPCloudGames.Domain.Responses;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
+using FIAPCloudGames.WebAPI.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FIAPCloudGames.WebAPI.Controllers;
@@ -20,8 +22,13 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest)
     {
-        var result = await _userService.Create(createUserRequest);
-        return Ok(result);
+        var validator = new CreateUserRequestValidator();
+        var result = validator.Validate(createUserRequest);
+        if (!result.IsValid)
+            return Ok(result.ToDictionary());
+
+        var user = await _userService.Create(createUserRequest);
+        return Ok(user);
     }
 
     [HttpPut(ApiRoutes.Users.Update)]
@@ -30,6 +37,12 @@ public class UserController : ApiController
     public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserRequest updateUserRequest)
     {
         updateUserRequest.Id = userId;
+
+        var validator = new UpdateUserRequestValidator();
+        var result = validator.Validate(updateUserRequest);
+        if (!result.IsValid)
+            return Ok(result.ToDictionary());
+
         await _userService.Update(updateUserRequest);
         return Ok();
     }
