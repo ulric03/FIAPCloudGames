@@ -28,6 +28,8 @@ public class UserService: IUserService
         var user = _mapper.Map<User>(request);
         user.CreatedBy = DateTime.UtcNow;
 
+        // TODO: Criar metodo de criptografia do password.
+
         await _userRepository.AddAsync(user);
         await _unitOfWork.CommitAsync();
 
