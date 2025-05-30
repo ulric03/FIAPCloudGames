@@ -2,7 +2,6 @@ using FIAPCloudGames.Application;
 using FIAPCloudGames.Infrastructure;
 using FIAPCloudGames.WebAPI;
 using FIAPCloudGames.WebAPI.Middlewares;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
 
@@ -22,17 +21,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(Assembly.Load));
 
-// FIAP Cloud Games - data base
-builder.Services.AddDbContext<FCGContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
 // FIAP Cloud Games
 builder.Services.AddApplication();
 builder.Services.AddPresentation();
 builder.Services.AddInfrastructure(builder.Configuration);
-
 
 var app = builder.Build();
 
@@ -51,7 +43,6 @@ app.UseReDoc(c =>
     c.SpecUrl = "/swagger/v1/swagger.json";
 
 });
-
 
 app.UseHttpsRedirection();
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FIAPCloudGames.Domain.Responses;
+﻿namespace FIAPCloudGames.Domain.Responses;
 
 public sealed class UserResponse
 {
@@ -20,5 +14,5 @@ public sealed class UserResponse
 
     public bool IsActive { get; set; }
 
-    public DateTime CreatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

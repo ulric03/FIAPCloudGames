@@ -1,10 +1,9 @@
 ﻿using FIAPCloudGames.Domain.Entities;
-using FIAPCloudGames.Infrastructure.Mappings;
 using Microsoft.EntityFrameworkCore;
 
-namespace FIAPCloudGames.Infrastructure;
+namespace FIAPCloudGames.Infrastructure.Database;
 
-public class FCGContext: DbContext
+public class FCGContext : DbContext
 {
     public FCGContext(DbContextOptions<FCGContext> options) : base(options)
     {
@@ -15,8 +14,7 @@ public class FCGContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.ApplyConfiguration(new UserConfiguration());
-        //modelBuilder.Seed();
+        modelBuilder.Seed();
     }
 }
 
@@ -25,13 +23,15 @@ public static class ModelBuilderExtensions
     public static void Seed(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasData(
-            new User { 
-                FullName = "Administrator", 
-                Login = "administrator", 
-                Password = "1234@&.AsYh", 
+            new User
+            {
+                Id = 1,
+                FullName = "Administrator",
+                Login = "administrator",
+                Password = "1234@&.AsYh", //TODO: Refazer a senha com hash e aplicar na Migration
                 UserType = 2,
                 IsActive = true,
-                CreatedBy = DateTime.UtcNow
+                CreatedAt = new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972)
             }
         );
     }

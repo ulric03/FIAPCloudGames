@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
+using FIAPCloudGames.Infrastructure.Database;
 using FIAPCloudGames.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +12,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        //services.AddDatabase(configuration);
+        services.AddDatabase(configuration);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
 

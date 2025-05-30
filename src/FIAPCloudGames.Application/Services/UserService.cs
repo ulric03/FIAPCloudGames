@@ -26,7 +26,7 @@ public class UserService: IUserService
     public async Task<UserResponse> Create(CreateUserRequest request)
     {
         var user = _mapper.Map<User>(request);
-        user.CreatedBy = DateTime.UtcNow;
+        user.CreatedAt = DateTime.UtcNow;
 
         // TODO: Criar metodo de criptografia do password.
 
@@ -46,7 +46,7 @@ public class UserService: IUserService
         var userCurrent = await _userRepository.GetByIdAsync(predicate);
 
         var user = _mapper.Map<User>(request);
-        user.CreatedBy = userCurrent.CreatedBy;
+        user.CreatedAt = userCurrent.CreatedAt;
 
         await _userRepository.UpdateAsync(user);
         await _unitOfWork.CommitAsync();

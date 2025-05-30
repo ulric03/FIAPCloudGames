@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FIAPCloudGames.Domain.Entities;
 using FIAPCloudGames.Domain.Repositores;
+using FIAPCloudGames.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace FIAPCloudGames.Infrastructure.Repositories;

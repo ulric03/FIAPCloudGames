@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FIAPCloudGames.Infrastructure.Mappings;
+namespace FIAPCloudGames.Infrastructure.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -35,8 +35,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasDefaultValue(false);
 
-        builder.Property(x => x.CreatedBy)
+        builder.Property(x => x.CreatedAt)
             .IsRequired()
-            .HasDefaultValue(DateTime.Now);
+            .HasDefaultValue(DateTime.UtcNow);
     }
 }
