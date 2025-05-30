@@ -1,7 +1,5 @@
-﻿using FIAPCloudGames.Domain.Entities;
-using FIAPCloudGames.Domain.Requests;
+﻿using FIAPCloudGames.Domain.Requests;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 
 namespace FIAPCloudGames.WebAPI.Validators;
 
@@ -44,7 +42,6 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
             .EmailAddress();
     }
 }
-
 
 public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
 {
