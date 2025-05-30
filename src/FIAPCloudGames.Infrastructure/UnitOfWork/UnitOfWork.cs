@@ -7,7 +7,7 @@ namespace FIAPCloudGames.Infrastructure;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly FCGContext _dbContext;
-    private readonly IDbContextTransaction _dbContextTransaction;
+    private readonly IDbContextTransaction? _dbContextTransaction;
     private readonly IServiceProvider _serviceProvider;
 
     public UnitOfWork(FCGContext dbContext, IServiceProvider serviceProvider)
@@ -28,14 +28,14 @@ public class UnitOfWork : IUnitOfWork
     public async Task CommitAsync(bool commitTransaction = true)
     {
         _dbContext.SaveChanges();
-        if (commitTransaction)
+        if (commitTransaction && _dbContextTransaction != null)
             await _dbContextTransaction.CommitAsync();
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken, bool commitTransaction = true)
     {
         _dbContext.SaveChanges();
-        if (commitTransaction)
+        if (commitTransaction && _dbContextTransaction != null)
             await _dbContextTransaction.CommitAsync(cancellationToken);
     }
 
@@ -54,6 +54,9 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task RollbackAsync()
     {
-        await _dbContextTransaction?.RollbackAsync();
+        if (_dbContextTransaction != null)
+        {
+            await _dbContextTransaction.RollbackAsync();
+        }
     }
 }

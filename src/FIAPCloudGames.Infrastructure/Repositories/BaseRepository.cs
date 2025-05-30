@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Infrastructure.Repositories;
 
-public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class 
+public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
     protected DbSet<TEntity> _dbSet;
 
@@ -16,12 +16,12 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         => await _dbSet.AddAsync(entity);
 
     public async Task UpdateAsync(TEntity entity)
-        => await Task.Run(() => 
-        { 
-            _dbSet.Update(entity); 
+        => await Task.Run(() =>
+        {
+            _dbSet.Update(entity);
         });
 
-    public void Delete(TEntity entity) 
+    public void Delete(TEntity entity)
         => _dbSet.Remove(entity);
 
     public async Task DeleteAsync(TEntity entity)
@@ -35,8 +35,8 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return await _dbSet.AsNoTracking().Where(predicate).ToListAsync();
     }
 
-    public async Task<TEntity?> GetByIdAsync(Expression<Func<TEntity, bool>> predicates)
+    public async Task<TEntity> GetByIdAsync(Expression<Func<TEntity, bool>> predicate)
     {
-        return await _dbSet.FirstOrDefaultAsync(predicates);
+        return await _dbSet.FirstOrDefaultAsync(predicate) ?? throw new InvalidOperationException("Entity not found.");
     }
 }

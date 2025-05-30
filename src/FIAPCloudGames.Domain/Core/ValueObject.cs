@@ -2,7 +2,7 @@
 
 public abstract class ValueObject : IEquatable<ValueObject>
 {
-    public static bool operator ==(ValueObject a, ValueObject b)
+    public static bool operator ==(ValueObject? a, ValueObject? b)
     {
         if (a is null && b is null)
         {
@@ -17,13 +17,13 @@ public abstract class ValueObject : IEquatable<ValueObject>
         return a.Equals(b);
     }
 
-    public static bool operator !=(ValueObject a, ValueObject b) 
+    public static bool operator !=(ValueObject? a, ValueObject? b)
         => !(a == b);
 
-    public bool Equals(ValueObject other) 
+    public bool Equals(ValueObject? other)
         => !(other is null) && GetAtomicValues().SequenceEqual(other.GetAtomicValues());
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
         {
