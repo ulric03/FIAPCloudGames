@@ -12,6 +12,7 @@ public class UserValidatorTests
     // --- CreateUserRequestValidator Tests ---
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_FullName_Too_Short()
     {
         var model = new CreateUserRequest { FullName = "Short", Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -20,6 +21,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_FullName_Too_Long()
     {
         var model = new CreateUserRequest { FullName = new string('a', 256), Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -28,6 +30,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Login_Is_Null()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = null, Password = "ValidPass1!", Email = "user@email.com" };
@@ -36,6 +39,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Login_Too_Short()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = "short", Password = "ValidPass1!", Email = "user@email.com" };
@@ -44,6 +48,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Login_Too_Long()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = new string('a', 21), Password = "ValidPass1!", Email = "user@email.com" };
@@ -52,6 +57,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Password_Is_Null()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = "ValidLogin1", Password = null, Email = "user@email.com" };
@@ -60,6 +66,7 @@ public class UserValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "UserValidator")]
     [InlineData("short1A!")]
     [InlineData("NoSpecialChar123")]
     [InlineData("nouppercase1!")]
@@ -74,6 +81,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Email_Is_Null()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = null };
@@ -82,6 +90,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Have_Error_When_Email_Too_Long()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = new string('a', 250) + "@mail.com" };
@@ -90,6 +99,7 @@ public class UserValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "UserValidator")]
     [InlineData("notanemail")]
     [InlineData("missingatsign.com")]
     [InlineData("missingdomain@")]
@@ -101,6 +111,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void CreateUser_Should_Not_Have_Error_When_All_Valid()
     {
         var model = new CreateUserRequest { FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -111,6 +122,7 @@ public class UserValidatorTests
     // --- UpdateUserRequestValidator Tests ---
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Id_Invalid()
     {
         var model = new UpdateUserRequest { Id = 0, FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -119,6 +131,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_FullName_Too_Short()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Short", Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -127,6 +140,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_FullName_Too_Long()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = new string('a', 256), Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };
@@ -135,6 +149,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Login_Is_Null()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = null, Password = "ValidPass1!", Email = "user@email.com" };
@@ -143,6 +158,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Login_Too_Short()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = "short", Password = "ValidPass1!", Email = "user@email.com" };
@@ -151,6 +167,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Login_Too_Long()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = new string('a', 21), Password = "ValidPass1!", Email = "user@email.com" };
@@ -159,6 +176,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Password_Is_Null()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = "ValidLogin1", Password = null, Email = "user@email.com" };
@@ -167,6 +185,7 @@ public class UserValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "UserValidator")]
     [InlineData("short1A!")]
     [InlineData("NoSpecialChar123")]
     [InlineData("nouppercase1!")]
@@ -181,6 +200,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Email_Is_Null()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = null };
@@ -189,6 +209,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Have_Error_When_Email_Too_Long()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = new string('a', 250) + "@mail.com" };
@@ -197,6 +218,7 @@ public class UserValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "UserValidator")]
     [InlineData("notanemail")]
     [InlineData("missingatsign.com")]
     [InlineData("missingdomain@")]
@@ -208,6 +230,7 @@ public class UserValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "UserValidator")]
     public void UpdateUser_Should_Not_Have_Error_When_All_Valid()
     {
         var model = new UpdateUserRequest { Id = 1, FullName = "Valid FullName", Login = "ValidLogin1", Password = "ValidPass1!", Email = "user@email.com" };

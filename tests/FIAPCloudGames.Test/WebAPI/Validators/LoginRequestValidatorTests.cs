@@ -9,6 +9,7 @@ public class LoginRequestValidatorTests
     private readonly LoginRequestValidator _validator = new();
 
     [Fact]
+    [Trait("Category", "LoginRequestValidator")]
     public void Should_Have_Error_When_Password_Is_Null()
     {
         var model = new LoginRequest { Email = "user@email.com", Password = null };
@@ -17,6 +18,7 @@ public class LoginRequestValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "LoginRequestValidator")]
     [InlineData("short1A!")]
     [InlineData("NoSpecialChar123")]
     [InlineData("nouppercase1!")]
@@ -31,6 +33,7 @@ public class LoginRequestValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "LoginRequestValidator")]
     [InlineData("ValidPass1!")]
     [InlineData("Another1@Pass")]
     [InlineData("Complex#Pass12")]
@@ -42,6 +45,7 @@ public class LoginRequestValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "LoginRequestValidator")]
     public void Should_Have_Error_When_Email_Is_Null()
     {
         var model = new LoginRequest { Email = null, Password = "ValidPass1!" };
@@ -50,6 +54,7 @@ public class LoginRequestValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "LoginRequestValidator")]
     public void Should_Have_Error_When_Email_Is_Too_Long()
     {
         var longEmail = new string('a', 250) + "@mail.com";
@@ -59,6 +64,7 @@ public class LoginRequestValidatorTests
     }
 
     [Theory]
+    [Trait("Category", "LoginRequestValidator")]
     [InlineData("notanemail")]
     [InlineData("missingatsign.com")]
     [InlineData("missingdomain@")]
@@ -70,6 +76,7 @@ public class LoginRequestValidatorTests
     }
 
     [Fact]
+    [Trait("Category", "LoginRequestValidator")]
     public void Should_Not_Have_Error_When_Email_Is_Valid()
     {
         var model = new LoginRequest { Email = "user@email.com", Password = "ValidPass1!" };
