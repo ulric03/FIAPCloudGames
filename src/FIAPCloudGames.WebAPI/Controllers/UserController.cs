@@ -2,10 +2,12 @@
 using FIAPCloudGames.Domain.Responses;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FIAPCloudGames.WebAPI.Controllers;
 
+[Authorize("admin")]
 public class UserController : ApiController
 {
     private readonly IUserService _userService;
