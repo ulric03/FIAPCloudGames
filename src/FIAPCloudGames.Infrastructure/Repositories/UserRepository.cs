@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FIAPCloudGames.Domain.Entities;
 using FIAPCloudGames.Domain.Repositores;
-using FIAPCloudGames.Infrastructure.Database;
+using FIAPCloudGames.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace FIAPCloudGames.Infrastructure.Repositories;
@@ -17,14 +17,11 @@ public class UserRepository: BaseRepository<User>, IUserRepository
         _mapper = mapper;
     }
 
-    public async Task<bool> Login(string email, string password)
+    public async Task<User?> Login(string email, string password)
     {
         var result = await _dbContext.Users
             .FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
 
-        if (result is null) 
-            return false;
-
-        return true;
+        return result;
     }
 }
