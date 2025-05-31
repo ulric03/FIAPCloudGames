@@ -2,6 +2,7 @@ using AutoMapper;
 using FIAPCloudGames.Application.Services;
 using FIAPCloudGames.Application.Utils;
 using FIAPCloudGames.Domain.Entities;
+using FIAPCloudGames.Domain.Enums;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
 using FIAPCloudGames.Domain.Requests;

@@ -9,15 +9,15 @@ using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Application.Services;
 
-public class UserService: IUserService
+public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
 
-    public UserService(IUnitOfWork unitOfWork, 
-        IMapper mapper, 
+    public UserService(IUnitOfWork unitOfWork,
+        IMapper mapper,
         IUserRepository userRepository,
         IJwtProvider jwtProvider)
     {
@@ -114,9 +114,9 @@ public class UserService: IUserService
         if (!exists)
             throw new Exception("The user doesn't exist.");
 
-        Expression<Func<User, bool>> predicate = x => x.Id == id; 
+        Expression<Func<User, bool>> predicate = x => x.Id == id;
         var user = await _userRepository.GetAsync(predicate);
-        
+
         user.IsActive = false;
 
         await _userRepository.UpdateAsync(user);

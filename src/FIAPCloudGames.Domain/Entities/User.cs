@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Domain.Entities;
+﻿using FIAPCloudGames.Domain.Enums;
+
+namespace FIAPCloudGames.Domain.Entities;
 
 public class User : BaseEntity
 {

@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace FIAPCloudGames.Domain.Enums;
+
 public enum UserRole
 {
     [Display(Name = "admin")]
