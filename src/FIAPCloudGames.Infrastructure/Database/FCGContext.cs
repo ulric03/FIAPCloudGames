@@ -29,6 +29,7 @@ public static class ModelBuilderExtensions
                 FullName = "Administrator",
                 Login = "administrator",
                 Password = "1234@&.AsYh", //TODO: Refazer a senha com hash e aplicar na Migration
+                Email = "adm@adm.com",
                 UserType = 2,
                 IsActive = true,
                 CreatedAt = new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972)

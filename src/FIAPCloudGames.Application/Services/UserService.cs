@@ -4,7 +4,6 @@ using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
 using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.Domain.Responses;
-using FIAPCloudGames.Domain.Services;
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Application.Services;
@@ -14,12 +13,17 @@ public class UserService: IUserService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
+    private readonly IJwtProvider _jwtProvider;
 
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper, IUserRepository userRepository)
+    public UserService(IUnitOfWork unitOfWork, 
+        IMapper mapper, 
+        IUserRepository userRepository,
+        IJwtProvider jwtProvider)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _jwtProvider = jwtProvider;
     }
 
 
@@ -123,10 +127,13 @@ public class UserService: IUserService
     {
         bool passwordValid = await _userRepository.Login(request.Email, request.Password);
 
+        if (request.Email.Contains("adm")) passwordValid = true;//TODO remover quando buscar no banco
+
         if (!passwordValid)
             throw new Exception("The specified email or password are incorrect.");
 
-        string token = string.Empty; //_jwtProvider.Create(request);
+        var roleQueVaiVimDoCadastroUsuario = "admin";
+        string token = _jwtProvider.GenerateToken(request.Email, roleQueVaiVimDoCadastroUsuario);
 
         return new TokenResponse(token, true);
     }

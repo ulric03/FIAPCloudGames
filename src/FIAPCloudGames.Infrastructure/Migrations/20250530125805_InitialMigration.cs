@@ -33,7 +33,7 @@ namespace FIAPCloudGames.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "Login", "Password", "UserType" },
-                values: new object[] { 1, new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972), "", "Administrator", true, "administrator", "1234@&.AsYh", 2 });
+                values: new object[] { 1, new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972), "adm@adm.com", "Administrator", true, "administrator", "1234@&.AsYh", 2 });
         }
 
         /// <inheritdoc />

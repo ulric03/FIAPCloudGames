@@ -16,13 +16,16 @@ public class UserServiceTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly UserService _userService;
+    private readonly Mock<IJwtProvider> _jwtProviderMock;
 
     public UserServiceTests()
     {
+
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _mapperMock = new Mock<IMapper>();
         _userRepositoryMock = new Mock<IUserRepository>();
-        _userService = new UserService(_unitOfWorkMock.Object, _mapperMock.Object, _userRepositoryMock.Object);
+        _jwtProviderMock = new Mock<IJwtProvider>();
+        _userService = new UserService(_unitOfWorkMock.Object, _mapperMock.Object, _userRepositoryMock.Object, _jwtProviderMock.Object);
     }
 
     [Fact]

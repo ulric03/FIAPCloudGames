@@ -64,7 +64,7 @@ namespace FIAPCloudGames.Infrastructure.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972),
-                            Email = "",
+                            Email = "adm@adm.com",
                             FullName = "Administrator",
                             IsActive = true,
                             Login = "administrator",
