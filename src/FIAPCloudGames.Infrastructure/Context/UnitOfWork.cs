@@ -1,5 +1,4 @@
 ﻿using FIAPCloudGames.Domain.Interfaces;
-using FIAPCloudGames.Infrastructure.Database;
 
 namespace FIAPCloudGames.Infrastructure.Context
 {

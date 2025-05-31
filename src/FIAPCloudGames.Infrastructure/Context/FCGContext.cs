@@ -1,7 +1,8 @@
-﻿using FIAPCloudGames.Domain.Entities;
+﻿using FIAPCloudGames.Application.Utils;
+using FIAPCloudGames.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FIAPCloudGames.Infrastructure.Database;
+namespace FIAPCloudGames.Infrastructure.Context;
 
 public class FCGContext : DbContext
 {
@@ -28,9 +29,9 @@ public static class ModelBuilderExtensions
                 Id = 1,
                 FullName = "Administrator",
                 Login = "administrator",
-                Password = "1234@&.AsYh", //TODO: Refazer a senha com hash e aplicar na Migration
+                Password = Utils.HashPassword("1234@&.AsYh"),
                 Email = "adm@adm.com",
-                UserType = 2,
+                UserType = UserRole.Admin,
                 IsActive = true,
                 CreatedAt = new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972)
             }

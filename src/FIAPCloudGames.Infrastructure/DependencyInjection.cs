@@ -1,6 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
-using FIAPCloudGames.Infrastructure.Database;
+using FIAPCloudGames.Infrastructure.Context;
 using FIAPCloudGames.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

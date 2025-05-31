@@ -10,7 +10,7 @@ public class User : BaseEntity
 
     public string Email { get; set; } = string.Empty;
 
-    public int UserType { get; set; }
+    public UserRole UserType { get; set; }
 
     public bool IsActive { get; set; }
 
