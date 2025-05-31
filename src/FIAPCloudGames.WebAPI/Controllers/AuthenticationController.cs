@@ -1,8 +1,8 @@
-﻿using FIAPCloudGames.Domain.Requests;
+﻿using FIAPCloudGames.Domain.Interfaces;
+using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.Domain.Responses;
-using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
-using Microsoft.AspNetCore.Authentication;
+using FIAPCloudGames.WebAPI.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FIAPCloudGames.WebAPI.Controllers;
@@ -33,18 +33,21 @@ public class AuthenticationController : ApiController
         _logger.LogInformation("Tentativa de login iniciada | CorrelationId: {CorrelationId} | Email: {Email}",
             HttpContext.TraceIdentifier, loginRequest.Email);
 
-        var result = await _userService.Login(loginRequest);
-
-        if (result == null)
+        var validator = new LoginRequestValidator();
+        var result = validator.Validate(loginRequest);
+        if (!result.IsValid)
         {
             _logger.LogWarning("Falha no login | CorrelationId: {CorrelationId} | Email: {Email}",
                 HttpContext.TraceIdentifier, loginRequest.Email);
-            return BadRequest();
+
+            return BadRequest(result.ToDictionary());
         }
+
+        var login = await _userService.Login(loginRequest);
 
         _logger.LogInformation("Login realizado com sucesso | CorrelationId: {CorrelationId} | Email: {Email}",
             HttpContext.TraceIdentifier, loginRequest.Email);
 
-        return Ok(result);
+        return Ok(login);
     }
 }

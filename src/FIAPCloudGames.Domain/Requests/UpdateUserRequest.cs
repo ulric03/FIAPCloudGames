@@ -18,5 +18,7 @@ public sealed class UpdateUserRequest
 
     public string Email { get; set; } = string.Empty;
 
+    public int UserType { get; set; }
+
     public bool IsActive { get; set; }
 }

@@ -1,11 +1,20 @@
+using FIAPCloudGames.Infrastructure;
 using FIAPCloudGames.WebAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FIAPCloudGames.WebAPI.Middlewares;
 using Serilog;
+using System.Reflection;
+using FIAPCloudGames.Application;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+}
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) // Pega configuração do appsettings.json
@@ -19,7 +28,7 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerConfiguration();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(Assembly.Load));
 
 #region JWT
 builder.Services.AddAuthentication(options => {
@@ -35,7 +44,7 @@ builder.Services.AddAuthentication(options => {
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
@@ -46,8 +55,9 @@ builder.Services.AddAuthorization(options => {
 #endregion
 
 // FIAP Cloud Games
+builder.Services.AddApplication();
 builder.Services.AddPresentation();
-
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -66,7 +76,6 @@ app.UseReDoc(c =>
     c.SpecUrl = "/swagger/v1/swagger.json";
 
 });
-
 
 app.UseHttpsRedirection();
 

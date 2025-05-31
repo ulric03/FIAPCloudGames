@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using FIAPCloudGames.Domain.Requests;
+using FIAPCloudGames.WebAPI.Validators;
+using FluentValidation;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace FIAPCloudGames.WebAPI;
@@ -8,7 +11,11 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        
+
+        services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
+        services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+        services.AddSwaggerConfiguration();
+
         return services;
     }
 

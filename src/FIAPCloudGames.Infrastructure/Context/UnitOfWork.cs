@@ -1,4 +1,5 @@
-﻿using FIAPCloudGames.Domain.Services;
+﻿using FIAPCloudGames.Domain.Interfaces;
+using FIAPCloudGames.Infrastructure.Database;
 
 namespace FIAPCloudGames.Infrastructure.Context
 {
@@ -16,7 +17,22 @@ namespace FIAPCloudGames.Infrastructure.Context
             await _context.SaveChangesAsync();
         }
 
+        public Task CommitAsync(bool commitTransaction = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task CommitAsync(CancellationToken cancellationToken, bool commitTransaction = true)
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RollbackAsync()
         {
             throw new NotImplementedException();
         }

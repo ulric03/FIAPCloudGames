@@ -1,7 +1,8 @@
-﻿using FIAPCloudGames.Domain.Requests;
+﻿using FIAPCloudGames.Domain.Interfaces;
+using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.Domain.Responses;
-using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.WebAPI.Contracts;
+using FIAPCloudGames.WebAPI.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,15 +32,26 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest createUserRequest)
     {
-        _logger.LogInformation("Iniciando criação de usuário | CorrelationId: {CorrelationId}", 
+        _logger.LogInformation("Iniciando criação de usuário | CorrelationId: {CorrelationId}",
             HttpContext.TraceIdentifier);
 
-        var result = await _userService.Create(createUserRequest);
+        var validator = new CreateUserRequestValidator();
+        var result = validator.Validate(createUserRequest);
+
+        if (!result.IsValid)
+        {
+            _logger.LogWarning("Falha ao criar usuário | CorrelationId: {CorrelationId} | Erro: {result}",
+                HttpContext.TraceIdentifier, result.ToDictionary());
+
+            return BadRequest(result.ToDictionary());
+        }
+
+        var user = await _userService.Create(createUserRequest);
 
         _logger.LogInformation("Usuário criado com sucesso | CorrelationId: {CorrelationId} | UserId: {UserId}",
-            HttpContext.TraceIdentifier, result.Id);
+            HttpContext.TraceIdentifier, user.Id);
 
-        return Ok(result);
+        return Ok(user);
     }
 
     /// <summary>
@@ -55,10 +67,20 @@ public class UserController : ApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserRequest updateUserRequest)
     {
-        updateUserRequest.Id = userId;
-
         _logger.LogInformation("Iniciando atualização de usuário | CorrelationId: {CorrelationId} | UserId: {UserId}",
             HttpContext.TraceIdentifier, userId);
+
+        updateUserRequest.Id = userId;
+
+        var validator = new UpdateUserRequestValidator();
+        var result = validator.Validate(updateUserRequest);
+        if (!result.IsValid)
+        {
+            _logger.LogWarning("Falha ao atualizar usuário | CorrelationId: {CorrelationId} | UserId: {UserId} | Erro: {result}",
+                HttpContext.TraceIdentifier, userId, result.ToDictionary());
+
+            return BadRequest(result.ToDictionary());
+        }
 
         await _userService.Update(updateUserRequest);
 
