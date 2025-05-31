@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Domain.Requests;
+﻿using FIAPCloudGames.Domain.Enums;
+
+namespace FIAPCloudGames.Domain.Requests;
 
 public sealed class CreateUserRequest
 {
