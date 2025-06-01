@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IGameRepository, GameRepository>();
 
         return services;
     }

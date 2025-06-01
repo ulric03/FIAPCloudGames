@@ -22,4 +22,18 @@ public static class ApiRoutes
         public const string Inactive = "users/{userId:int}/inactive";
     }
 
+    public static class Games
+    {
+        public const string Create = "games";
+
+        public const string Update = "games/{gameId:int}";
+
+        public const string GetAll = "games";
+
+        public const string GetById = "games/{gameId:int}";
+
+        public const string Active = "games/{gameId:int}/active";
+
+        public const string Inactive = "games/{gameId:int}/inactive";
+    }
 }
