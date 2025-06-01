@@ -87,6 +87,22 @@ public class UserServiceTests
 
     [Fact]
     [Trait("Category", "UserService")]
+    public async Task GetByEmail_ShouldReturnUserResponse_WhenUserExists()
+    {
+        var user = new User { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = UserRole.Admin, IsActive = true, CreatedAt = DateTime.UtcNow };
+        var response = new UserResponse { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = 1, IsActive = true, CreatedAt = user.CreatedAt };
+
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _mapperMock.Setup(m => m.Map<UserResponse>(user)).Returns(response);
+
+        var result = await _userService.GetByEmail("test@test.com");
+
+        Assert.Equal(response.Id, result.Id);
+    }
+
+    [Fact]
+    [Trait("Category", "UserService")]
     public async Task Login_ShouldReturnTokenResponse_WhenCredentialsAreValid()
     {
         var request = new LoginRequest { Email = "test@test.com", Password = "123" };
@@ -293,11 +309,19 @@ public class UserServiceTests
 
     [Fact]
     [Trait("Category", "UserService")]
-    public async Task GetById_ShouldThrowException_WhenUserDoesNotExist()
+    public async Task GetById_ShouldReturnNull_WhenUserDoesNotExist()
     {
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+        var result = await _userService.GetById(1);
 
-        var ex = await Assert.ThrowsAsync<Exception>(() => _userService.GetById(1));
-        Assert.Equal("The user doesn't exist.", ex.Message);
+        Assert.Null(result);
+    }
+
+    [Fact]
+    [Trait("Category", "UserService")]
+    public async Task GetByEmail_ShouldReturnNull_WhenUserDoesNotExist()
+    {
+        var result = await _userService.GetByEmail("Not existent mail");
+
+        Assert.Null(result);
     }
 }

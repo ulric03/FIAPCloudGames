@@ -38,14 +38,14 @@ public class GameServiceTests
         var gameResponse = new GameResponse { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = game.CreatedAt, UserId = 1 };
 
         _mapperMock.Setup(m => m.Map<Game>(gameRequest)).Returns(game);
-        _gameRepositoryMock.Setup(r => r.AddAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.AddAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
         _mapperMock.Setup(m => m.Map<GameResponse>(game)).Returns(gameResponse);
 
         var result = await _gameService.Create(gameRequest);
 
         Assert.Equal(gameResponse.Id, result.Id);
-        _gameRepositoryMock.Verify(r => r.AddAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.AddAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -59,14 +59,14 @@ public class GameServiceTests
         var gameResponse = new GameResponse { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = false, CreatedAt = game.CreatedAt, UserId = 1 };
 
         _mapperMock.Setup(m => m.Map<Game>(gameRequest)).Returns(game);
-        _gameRepositoryMock.Setup(r => r.AddAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.AddAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
         _mapperMock.Setup(m => m.Map<GameResponse>(game)).Returns(gameResponse);
 
         var result = await _gameService.Create(gameRequest);
 
         Assert.Equal(gameResponse.Id, result.Id);
-        _gameRepositoryMock.Verify(r => r.AddAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.AddAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -75,7 +75,7 @@ public class GameServiceTests
     public async Task Update_ShouldThrowException_WhenGameDoesNotExist()
     {
         var request = new UpdateGameRequest { Id = 1 };
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(false);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(false);
 
         await Assert.ThrowsAsync<Exception>(() => _gameService.Update(request));
     }
@@ -84,7 +84,7 @@ public class GameServiceTests
     [Trait("Category", "GameService")]
     public async Task Delete_ShouldThrowException_WhenGameDoesNotExist()
     {
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(false);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(false);
 
         await Assert.ThrowsAsync<Exception>(() => _gameService.Delete(1));
     }
@@ -96,8 +96,8 @@ public class GameServiceTests
         var game = new Game { Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = DateTime.UtcNow, UserId = 1 };
         var response = new GameResponse { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = game.CreatedAt, UserId = 1 };
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
-        _gameRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(game);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(true);
+        _gameRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(game);
         _mapperMock.Setup(m => m.Map<GameResponse>(game)).Returns(response);
 
         var result = await _gameService.GetById(1);
@@ -112,15 +112,15 @@ public class GameServiceTests
         var request = new UpdateGameRequest { Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, UserId = 1, IsActive = true };
         var game = new Game { Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = DateTime.UtcNow, UserId = 1 };
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
-        _gameRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(game);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(true);
+        _gameRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(game);
         _mapperMock.Setup(m => m.Map<Game>(request)).Returns(game);
-        _gameRepositoryMock.Setup(r => r.UpdateAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.UpdateAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _gameService.Update(request);
 
-        _gameRepositoryMock.Verify(r => r.UpdateAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.UpdateAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -130,14 +130,14 @@ public class GameServiceTests
     {
         var game = new Game { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = DateTime.UtcNow, UserId = 1 };
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
-        _gameRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(game);
-        _gameRepositoryMock.Setup(r => r.DeleteAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(true);
+        _gameRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(game);
+        _gameRepositoryMock.Setup(r => r.DeleteAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _gameService.Delete(game.Id);
 
-        _gameRepositoryMock.Verify(r => r.DeleteAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.DeleteAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -147,15 +147,15 @@ public class GameServiceTests
     {
         var game = new Game { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = DateTime.UtcNow, UserId = 1 };
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
-        _gameRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(game);
-        _gameRepositoryMock.Setup(r => r.UpdateAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(true);
+        _gameRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(game);
+        _gameRepositoryMock.Setup(r => r.UpdateAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _gameService.Active(game.Id);
 
         Assert.True(game.IsActive);
-        _gameRepositoryMock.Verify(r => r.UpdateAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.UpdateAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -165,15 +165,15 @@ public class GameServiceTests
     {
         var game = new Game { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = DateTime.UtcNow, UserId = 1 };
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
-        _gameRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(game);
-        _gameRepositoryMock.Setup(r => r.UpdateAsync(game)).Returns(Task.CompletedTask);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(true);
+        _gameRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(game);
+        _gameRepositoryMock.Setup(r => r.UpdateAsync(game, new CancellationToken())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _gameService.Inactive(game.Id);
 
         Assert.False(game.IsActive);
-        _gameRepositoryMock.Verify(r => r.UpdateAsync(game), Times.Once);
+        _gameRepositoryMock.Verify(r => r.UpdateAsync(game, new CancellationToken()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -189,7 +189,7 @@ public class GameServiceTests
         var gameResponse = new GameResponse { Id = 1, Name = "Fifa game test", Description = "Description Fifa game test", Company = "EA Sports FC", Price = 542.50M, IsActive = true, CreatedAt = game.CreatedAt, UserId = 1 };
         gameResponses.Add(gameResponse);
 
-        _gameRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(games);
+        _gameRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(games);
         _mapperMock.Setup(m => m.Map<IEnumerable<GameResponse>>(games)).Returns(gameResponses);
 
         var result = await _gameService.GetAll();
@@ -205,7 +205,7 @@ public class GameServiceTests
     {
         await Create_ShouldAddGameActive_AndReturnGameResponse();
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(false);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _gameService.Active(1));
         Assert.Equal("The game doesn't exist.", ex.Message);
@@ -217,7 +217,7 @@ public class GameServiceTests
     {
         await Create_ShouldAddGameInactive_AndReturnGameResponse();
 
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(false);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _gameService.Inactive(1));
         Assert.Equal("The game doesn't exist.", ex.Message);
@@ -227,7 +227,7 @@ public class GameServiceTests
     [Trait("Category", "GameService")]
     public async Task GetById_ShouldThrowException_WhenGameDoesNotExist()
     {
-        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(false);
+        _gameRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<Game, bool>>>(), new CancellationToken())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _gameService.GetById(1));
         Assert.Equal("The game doesn't exist.", ex.Message);

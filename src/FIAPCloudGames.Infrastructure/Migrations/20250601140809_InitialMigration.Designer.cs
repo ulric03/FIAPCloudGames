@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FIAPCloudGames.Infrastructure.Migrations
 {
     [DbContext(typeof(FCGContext))]
-    [Migration("20250530125805_InitialMigration")]
+    [Migration("20250601140809_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -24,6 +24,45 @@ namespace FIAPCloudGames.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("FIAPCloudGames.Domain.Entities.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Games");
+                });
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Entities.User", b =>
                 {
@@ -67,13 +106,24 @@ namespace FIAPCloudGames.Infrastructure.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 5, 30, 12, 50, 51, 795, DateTimeKind.Utc).AddTicks(8972),
-                            Email = "",
+                            Email = "adm@adm.com",
                             FullName = "Administrator",
                             IsActive = true,
                             Login = "administrator",
-                            Password = "1234@&.AsYh",
-                            UserType = 2
+                            Password = "fw4iQdwDIKX7chkp1ULbmqhtzKVx5JGivKHEZ+rPJdI=",
+                            UserType = 1
                         });
+                });
+
+            modelBuilder.Entity("FIAPCloudGames.Domain.Entities.Game", b =>
+                {
+                    b.HasOne("FIAPCloudGames.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

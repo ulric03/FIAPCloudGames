@@ -21,6 +21,7 @@ public class JwtProvider(IConfiguration _configuration) : IJwtProvider
         {
                 new Claim(JwtRegisteredClaimNames.Sub, userName),
                 new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.Email, userName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

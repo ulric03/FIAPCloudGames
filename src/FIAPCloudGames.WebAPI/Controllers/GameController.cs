@@ -5,18 +5,20 @@ using FIAPCloudGames.WebAPI.Contracts;
 using FIAPCloudGames.WebAPI.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FIAPCloudGames.WebAPI.Controllers;
 
-[Authorize("admin")]
 public class GameController : ApiController
 {
     private readonly IGameService _gameService;
+    private readonly IUserService _userService;
     private readonly ILogger<GameController> _logger;
 
-    public GameController(IGameService gameService, ILogger<GameController> logger)
+    public GameController(IGameService gameService, IUserService userService, ILogger<GameController> logger)
     {
         _gameService = gameService;
+        _userService = userService;
         _logger = logger;
     }
 
@@ -27,6 +29,7 @@ public class GameController : ApiController
     /// <returns>Retorna o jogo criado.</returns>
     /// <response code="201">Jogo criado com sucesso.</response>
     /// <response code="400">Erro de validação nos dados informados.</response>
+    [Authorize(Roles = "admin")]
     [HttpPost(ApiRoutes.Games.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
@@ -46,7 +49,22 @@ public class GameController : ApiController
             return BadRequest(result.ToDictionary());
         }
 
-        var userId = int.Parse(User.Claims.ToList()[0].Value);
+        var emailClaim = User.FindFirst(ClaimTypes.Email);
+        if (emailClaim == null)
+        {
+            return BadRequest("E-mail não encontrado no token.");
+        }
+        var email = emailClaim.Value;
+
+        var user = await _userService.GetByEmail(email);
+        if (user == null)
+        {
+            _logger.LogWarning("Usuário não encontrado | CorrelationId: {CorrelationId} | Email: {Email}",
+                HttpContext.TraceIdentifier, email);
+            return BadRequest("Usuário não encontrado.");
+        }
+
+        var userId = user.Id;
         createGameRequest.UserId = userId;
 
         var game = await _gameService.Create(createGameRequest);
@@ -65,6 +83,7 @@ public class GameController : ApiController
     /// <returns>Confirmação da atualização.</returns>
     /// <response code="200">Jogo atualizado com sucesso.</response>
     /// <response code="400">Erro nos dados informados.</response>
+    [Authorize(Roles = "admin")]
     [HttpPut(ApiRoutes.Games.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
@@ -103,6 +122,7 @@ public class GameController : ApiController
     /// <returns>Dados do jogo.</returns>
     /// <response code="200">Jogo encontrado.</response>
     /// <response code="404">Jogo não encontrado.</response>
+    [Authorize(Roles = "admin,user")]
     [HttpGet(ApiRoutes.Games.GetById)]
     [ProducesResponseType(typeof(GameResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -133,6 +153,7 @@ public class GameController : ApiController
     /// <returns>Lista de jogos.</returns>
     /// <response code="200">Lista retornada com sucesso.</response>
     /// <response code="404">Nenhum jogo encontrado.</response>
+    [Authorize(Roles = "admin,user")]
     [HttpGet(ApiRoutes.Games.GetAll)]
     [ProducesResponseType(typeof(IEnumerable<GameResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -156,6 +177,7 @@ public class GameController : ApiController
     /// <returns>Confirmação da ativação.</returns>
     /// <response code="200">Jogo ativado com sucesso.</response>
     /// <response code="400">Erro ao ativar jogo.</response>
+    [Authorize(Roles = "admin")]
     [HttpPut(ApiRoutes.Games.Active)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
@@ -179,6 +201,7 @@ public class GameController : ApiController
     /// <returns>Confirmação da inativação.</returns>
     /// <response code="200">Jogo inativado com sucesso.</response>
     /// <response code="400">Erro ao inativar jogo.</response>
+    [Authorize(Roles = "admin")]
     [HttpPut(ApiRoutes.Games.Inactive)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]

@@ -45,7 +45,7 @@ public class GameService: IGameService
             throw new Exception("The game doesn't exist");
 
         Expression<Func<Game, bool>> predicate = x => x.Id == request.Id;
-        var gameCurrent = await _gameRepository.GetByIdAsync(predicate);
+        var gameCurrent = await _gameRepository.GetAsync(predicate);
 
         var game = _mapper.Map<Game>(request);
         game.CreatedAt = gameCurrent.CreatedAt;
@@ -61,7 +61,7 @@ public class GameService: IGameService
             throw new Exception("The game doesn't exist");
 
         Expression<Func<Game, bool>> predicate = x => x.Id == id;
-        var game = await _gameRepository.GetByIdAsync(predicate);
+        var game = await _gameRepository.GetAsync(predicate);
 
         await _gameRepository.DeleteAsync(game);
         await _unitOfWork.CommitAsync();
@@ -85,7 +85,7 @@ public class GameService: IGameService
             throw new Exception("The game doesn't exist.");
 
         Expression<Func<Game, bool>> predicate = x => x.Id == id;
-        var user = await _gameRepository.GetByIdAsync(predicate);
+        var user = await _gameRepository.GetAsync(predicate);
 
         var response = _mapper.Map<GameResponse>(user);
 
@@ -99,7 +99,7 @@ public class GameService: IGameService
             throw new Exception("The game doesn't exist.");
 
         Expression<Func<Game, bool>> predicate = x => x.Id == id;
-        var game = await _gameRepository.GetByIdAsync(predicate);
+        var game = await _gameRepository.GetAsync(predicate);
 
         game.IsActive = true;
 
@@ -114,7 +114,7 @@ public class GameService: IGameService
             throw new Exception("The game doesn't exist.");
 
         Expression<Func<Game, bool>> predicate = x => x.Id == id; 
-        var game = await _gameRepository.GetByIdAsync(predicate);
+        var game = await _gameRepository.GetAsync(predicate);
         
         game.IsActive = false;
 

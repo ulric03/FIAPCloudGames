@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FIAPCloudGames.Domain.Entities;
+﻿namespace FIAPCloudGames.Domain.Entities;
 
 public class Game : BaseEntity
 {
@@ -18,5 +16,5 @@ public class Game : BaseEntity
 
     public int UserId { get; set; }
 
-    public User User { get; set; } = new();
+    public User? User { get; set; }
 }

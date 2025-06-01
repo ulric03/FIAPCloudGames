@@ -27,6 +27,7 @@ public class UserController : ApiController
     /// <returns>Retorna o usuário criado.</returns>
     /// <response code="201">Usuário criado com sucesso.</response>
     /// <response code="400">Erro de validação nos dados informados.</response>
+    [AllowAnonymous]
     [HttpPost(ApiRoutes.Users.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
@@ -111,7 +112,7 @@ public class UserController : ApiController
         {
             _logger.LogWarning("Usuário não encontrado | CorrelationId: {CorrelationId} | UserId: {UserId}",
                 HttpContext.TraceIdentifier, userId);
-            return NotFound();
+            return NotFound("Usuário não encontrado");
         }
 
         _logger.LogInformation("Usuário encontrado | CorrelationId: {CorrelationId} | UserId: {UserId}",
