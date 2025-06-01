@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Domain.Entities;
+﻿using FIAPCloudGames.Domain.Enums;
+
+namespace FIAPCloudGames.Domain.Entities;
 
 public class User : BaseEntity
 {
@@ -10,7 +12,7 @@ public class User : BaseEntity
 
     public string Email { get; set; } = string.Empty;
 
-    public int UserType { get; set; }
+    public UserRole UserType { get; set; }
 
     public bool IsActive { get; set; }
 

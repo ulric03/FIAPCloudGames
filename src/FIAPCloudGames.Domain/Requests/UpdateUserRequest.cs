@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FIAPCloudGames.Domain.Enums;
 
 namespace FIAPCloudGames.Domain.Requests;
 
@@ -18,7 +14,7 @@ public sealed class UpdateUserRequest
 
     public string Email { get; set; } = string.Empty;
 
-    public int UserType { get; set; }
+    public UserRole UserType { get; set; }
 
     public bool IsActive { get; set; }
 }

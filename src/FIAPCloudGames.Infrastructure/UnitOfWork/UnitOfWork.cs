@@ -1,5 +1,5 @@
 ﻿using FIAPCloudGames.Domain.Interfaces;
-using FIAPCloudGames.Infrastructure.Database;
+using FIAPCloudGames.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 

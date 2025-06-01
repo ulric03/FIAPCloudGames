@@ -1,6 +1,8 @@
 using AutoMapper;
 using FIAPCloudGames.Application.Services;
+using FIAPCloudGames.Application.Utils;
 using FIAPCloudGames.Domain.Entities;
+using FIAPCloudGames.Domain.Enums;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
 using FIAPCloudGames.Domain.Requests;
@@ -32,19 +34,19 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task Create_ShouldAddUser_AndReturnUserResponse()
     {
-        var request = new CreateUserRequest { FullName = "Test", Login = "test", Password = "123", Email = "test@test.com", UserType = 1, IsActive = true };
-        var user = new User { Id = 1, FullName = "Test", Login = "test", Password = "123", Email = "test@test.com", UserType = 1, IsActive = true, CreatedAt = DateTime.UtcNow };
+        var request = new CreateUserRequest { FullName = "Test", Login = "test", Password = "123", Email = "test@test.com", UserType = UserRole.Admin, IsActive = true };
+        var user = new User { Id = 1, FullName = "Test", Login = "test", Password = "123", Email = "test@test.com", UserType = UserRole.Admin, IsActive = true, CreatedAt = DateTime.UtcNow };
         var response = new UserResponse { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = 1, IsActive = true, CreatedAt = user.CreatedAt };
 
         _mapperMock.Setup(m => m.Map<User>(request)).Returns(user);
-        _userRepositoryMock.Setup(r => r.AddAsync(user)).Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(r => r.AddAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
         _mapperMock.Setup(m => m.Map<UserResponse>(user)).Returns(response);
 
         var result = await _userService.Create(request);
 
         Assert.Equal(response.Id, result.Id);
-        _userRepositoryMock.Verify(r => r.AddAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.AddAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -53,7 +55,7 @@ public class UserServiceTests
     public async Task Update_ShouldThrowException_WhenUserDoesNotExist()
     {
         var request = new UpdateUserRequest { Id = 1 };
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         await Assert.ThrowsAsync<Exception>(() => _userService.Update(request));
     }
@@ -62,7 +64,7 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task Delete_ShouldThrowException_WhenUserDoesNotExist()
     {
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         await Assert.ThrowsAsync<Exception>(() => _userService.Delete(1));
     }
@@ -71,11 +73,11 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task GetById_ShouldReturnUserResponse_WhenUserExists()
     {
-        var user = new User { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = 1, IsActive = true, CreatedAt = DateTime.UtcNow };
+        var user = new User { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = UserRole.Admin, IsActive = true, CreatedAt = DateTime.UtcNow };
         var response = new UserResponse { Id = 1, FullName = "Test", Login = "test", Email = "test@test.com", UserType = 1, IsActive = true, CreatedAt = user.CreatedAt };
 
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
         _mapperMock.Setup(m => m.Map<UserResponse>(user)).Returns(response);
 
         var result = await _userService.GetById(1);
@@ -88,7 +90,7 @@ public class UserServiceTests
     public async Task Login_ShouldReturnTokenResponse_WhenCredentialsAreValid()
     {
         var request = new LoginRequest { Email = "test@test.com", Password = "123" };
-        _userRepositoryMock.Setup(r => r.Login(request.Email, request.Password)).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.Login(request.Email, Utils.HashPassword("123"))).ReturnsAsync(new User() { Id = 1, IsActive = true});
 
         var result = await _userService.Login(request);
 
@@ -100,9 +102,9 @@ public class UserServiceTests
     public async Task Login_ShouldThrowException_WhenCredentialsAreInvalid()
     {
         var request = new LoginRequest { Email = "test@test.com", Password = "wrong" };
-        _userRepositoryMock.Setup(r => r.Login(request.Email, request.Password)).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.Login(request.Email, request.Password)).ReturnsAsync(new User() { Id = 1, IsActive = false});
 
-        await Assert.ThrowsAsync<Exception>(() => _userService.Login(request));
+        await Assert.ThrowsAsync<ArgumentException>(() => _userService.Login(request));
     }
 
     [Fact]
@@ -116,7 +118,7 @@ public class UserServiceTests
             Login = "updatedlogin",
             Password = "UpdatedPass1!",
             Email = "updated@email.com",
-            UserType = 2,
+            UserType = UserRole.User,
             IsActive = true
         };
         var user = new User
@@ -126,20 +128,20 @@ public class UserServiceTests
             Login = "oldlogin",
             Password = "OldPass1!",
             Email = "old@email.com",
-            UserType = 1,
+            UserType = UserRole.Admin,
             IsActive = false,
             CreatedAt = DateTime.UtcNow
         };
 
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
         _mapperMock.Setup(m => m.Map<User>(request)).Returns(user);
-        _userRepositoryMock.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(r => r.UpdateAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _userService.Update(request);
 
-        _userRepositoryMock.Verify(r => r.UpdateAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -154,19 +156,19 @@ public class UserServiceTests
             Login = "test",
             Password = "123",
             Email = "test@test.com",
-            UserType = 1,
+            UserType = UserRole.Admin,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
 
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(user);
-        _userRepositoryMock.Setup(r => r.DeleteAsync(user)).Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.DeleteAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _userService.Delete(user.Id);
 
-        _userRepositoryMock.Verify(r => r.DeleteAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.DeleteAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -181,20 +183,20 @@ public class UserServiceTests
             Login = "test",
             Password = "123",
             Email = "test@test.com",
-            UserType = 1,
+            UserType = UserRole.Admin,
             IsActive = false,
             CreatedAt = DateTime.UtcNow
         };
 
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(user);
-        _userRepositoryMock.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.UpdateAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _userService.Active(user.Id);
 
         Assert.True(user.IsActive);
-        _userRepositoryMock.Verify(r => r.UpdateAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -209,20 +211,20 @@ public class UserServiceTests
             Login = "test",
             Password = "123",
             Email = "test@test.com",
-            UserType = 1,
+            UserType = UserRole.Admin,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
 
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(user);
-        _userRepositoryMock.Setup(r => r.UpdateAsync(user)).Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.UpdateAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<bool>())).Returns(Task.CompletedTask);
 
         await _userService.Inactive(user.Id);
 
         Assert.False(user.IsActive);
-        _userRepositoryMock.Verify(r => r.UpdateAsync(user), Times.Once);
+        _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.CommitAsync(It.IsAny<bool>()), Times.Once);
     }
 
@@ -239,7 +241,7 @@ public class UserServiceTests
                 Login = "test",
                 Password = "123",
                 Email = "test@test.com",
-                UserType = 1,
+                UserType = UserRole.Admin,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             }
@@ -259,7 +261,7 @@ public class UserServiceTests
             }
         };
 
-        _userRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(users);
+        _userRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(users);
         _mapperMock.Setup(m => m.Map<IEnumerable<UserResponse>>(users)).Returns(userResponses);
 
         var result = await _userService.GetAll();
@@ -273,7 +275,7 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task Active_ShouldThrowException_WhenUserDoesNotExist()
     {
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _userService.Active(1));
         Assert.Equal("The user doesn't exist.", ex.Message);
@@ -283,7 +285,7 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task Inactive_ShouldThrowException_WhenUserDoesNotExist()
     {
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _userService.Inactive(1));
         Assert.Equal("The user doesn't exist.", ex.Message);
@@ -293,7 +295,7 @@ public class UserServiceTests
     [Trait("Category", "UserService")]
     public async Task GetById_ShouldThrowException_WhenUserDoesNotExist()
     {
-        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(r => r.ExistAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => _userService.GetById(1));
         Assert.Equal("The user doesn't exist.", ex.Message);

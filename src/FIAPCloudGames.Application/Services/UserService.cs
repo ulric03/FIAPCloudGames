@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FIAPCloudGames.Domain.Entities;
+using FIAPCloudGames.Domain.Extensions;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
 using FIAPCloudGames.Domain.Requests;
@@ -8,15 +9,15 @@ using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Application.Services;
 
-public class UserService: IUserService
+public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
 
-    public UserService(IUnitOfWork unitOfWork, 
-        IMapper mapper, 
+    public UserService(IUnitOfWork unitOfWork,
+        IMapper mapper,
         IUserRepository userRepository,
         IJwtProvider jwtProvider)
     {
@@ -26,13 +27,12 @@ public class UserService: IUserService
         _jwtProvider = jwtProvider;
     }
 
-
     public async Task<UserResponse> Create(CreateUserRequest request)
     {
         var user = _mapper.Map<User>(request);
         user.CreatedAt = DateTime.UtcNow;
 
-        // TODO: Criar metodo de criptografia do password.
+        user.Password = Utils.Utils.HashPassword(request.Password);
 
         await _userRepository.AddAsync(user);
         await _unitOfWork.CommitAsync();
@@ -47,7 +47,7 @@ public class UserService: IUserService
             throw new Exception("The user doesn't exist");
 
         Expression<Func<User, bool>> predicate = x => x.Id == request.Id;
-        var userCurrent = await _userRepository.GetByIdAsync(predicate);
+        var userCurrent = await _userRepository.GetAsync(predicate);
 
         var user = _mapper.Map<User>(request);
         user.CreatedAt = userCurrent.CreatedAt;
@@ -63,7 +63,7 @@ public class UserService: IUserService
             throw new Exception("The user doesn't exist");
 
         Expression<Func<User, bool>> predicate = x => x.Id == id;
-        var user = await _userRepository.GetByIdAsync(predicate);
+        var user = await _userRepository.GetAsync(predicate);
 
         await _userRepository.DeleteAsync(user);
         await _unitOfWork.CommitAsync();
@@ -86,7 +86,7 @@ public class UserService: IUserService
             throw new Exception("The user doesn't exist.");
 
         Expression<Func<User, bool>> predicate = x => x.Id == id;
-        var user = await _userRepository.GetByIdAsync(predicate);
+        var user = await _userRepository.GetAsync(predicate);
 
         var response = _mapper.Map<UserResponse>(user);
 
@@ -100,7 +100,7 @@ public class UserService: IUserService
             throw new Exception("The user doesn't exist.");
 
         Expression<Func<User, bool>> predicate = x => x.Id == id;
-        var user = await _userRepository.GetByIdAsync(predicate);
+        var user = await _userRepository.GetAsync(predicate);
 
         user.IsActive = true;
 
@@ -114,9 +114,9 @@ public class UserService: IUserService
         if (!exists)
             throw new Exception("The user doesn't exist.");
 
-        Expression<Func<User, bool>> predicate = x => x.Id == id; 
-        var user = await _userRepository.GetByIdAsync(predicate);
-        
+        Expression<Func<User, bool>> predicate = x => x.Id == id;
+        var user = await _userRepository.GetAsync(predicate);
+
         user.IsActive = false;
 
         await _userRepository.UpdateAsync(user);
@@ -125,15 +125,14 @@ public class UserService: IUserService
 
     public async Task<TokenResponse> Login(LoginRequest request)
     {
-        bool passwordValid = await _userRepository.Login(request.Email, request.Password);
+        var user = await _userRepository.Login(request.Email, Utils.Utils.HashPassword(request.Password)) ?? throw new ArgumentException("The specified email or password are incorrect.");
 
-        if (request.Email.Contains("adm")) passwordValid = true;//TODO remover quando buscar no banco
+        if (!user.IsActive)
+        {
+            throw new ArgumentException("The user is blocked!");
+        }
 
-        if (!passwordValid)
-            throw new Exception("The specified email or password are incorrect.");
-
-        var roleQueVaiVimDoCadastroUsuario = "admin";
-        string token = _jwtProvider.GenerateToken(request.Email, roleQueVaiVimDoCadastroUsuario);
+        string token = _jwtProvider.GenerateToken(request.Email, user.UserType.GetDisplayName());
 
         return new TokenResponse(token, true);
     }
