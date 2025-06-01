@@ -79,14 +79,26 @@ public class UserService : IUserService
         return response;
     }
 
-    public async Task<UserResponse> GetById(int id)
+    public async Task<UserResponse?> GetById(int id)
     {
-        var exists = await _userRepository.ExistAsync(x => x.Id == id);
-        if (!exists)
-            throw new Exception("The user doesn't exist.");
-
         Expression<Func<User, bool>> predicate = x => x.Id == id;
         var user = await _userRepository.GetAsync(predicate);
+
+        if (user == null)
+            return null;
+
+        var response = _mapper.Map<UserResponse>(user);
+
+        return response;
+    }
+
+    public async Task<UserResponse?> GetByEmail(string email)
+    {
+        Expression<Func<User, bool>> predicate = x => x.Email.ToLower().Equals(email.ToLower());
+        var user = await _userRepository.GetAsync(predicate);
+
+        if (user == null)
+            return null;
 
         var response = _mapper.Map<UserResponse>(user);
 

@@ -11,7 +11,9 @@ public interface IUserService
 
     Task Delete(int id);
 
-    Task<UserResponse> GetById(int id);
+    Task<UserResponse?> GetById(int id);
+
+    Task<UserResponse?> GetByEmail(string email);
 
     Task<IEnumerable<UserResponse>> GetAll();
 
