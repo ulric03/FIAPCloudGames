@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using FIAPCloudGames.Domain.Requests;
+using FIAPCloudGames.WebAPI.Validators;
+using FluentValidation;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace FIAPCloudGames.WebAPI;
@@ -9,6 +12,9 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
+        services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
+        services.AddScoped<IValidator<CreateGameRequest>, CreateGameRequestValidator>();
+        services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddSwaggerConfiguration();
 
         return services;
@@ -18,6 +24,10 @@ public static class DependencyInjection
     {
         services.AddSwaggerGen(swagger =>
         {
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            swagger.IncludeXmlComments(xmlPath);
+
             swagger.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",

@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Domain.Repositores;
 
 public interface IBaseRepository<TEntity> where TEntity : class
 {
-    Task AddAsync(TEntity entity);
+    Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    Task UpdateAsync(TEntity entity);
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    Task<TEntity> GetByIdAsync(int id, IEnumerable<string>? entitiesToInclude = null);
+    Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<TEntity>> GetAllAsync(IEnumerable<Expression<Func<TEntity, bool>>>? predicates = null, IEnumerable<string>? entitiesToInclude = null);
+    Task<IEnumerable<TEntity>> GetAllAsync(
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
 
-    Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
-    void Delete(TEntity entity);
+    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    Task DeleteAsync(TEntity entity);
+    Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default);
+
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 }

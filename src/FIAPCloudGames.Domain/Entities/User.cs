@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FIAPCloudGames.Domain.Enums;
 
 namespace FIAPCloudGames.Domain.Entities;
 
-public class User: BaseEntity
+public class User : BaseEntity
 {
     public string FullName { get; set; } = string.Empty;
 
@@ -16,7 +12,9 @@ public class User: BaseEntity
 
     public string Email { get; set; } = string.Empty;
 
+    public UserRole UserType { get; set; }
+
     public bool IsActive { get; set; }
 
-    public DateTime CreatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

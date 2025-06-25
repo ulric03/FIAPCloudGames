@@ -74,10 +74,11 @@ A estrutura do projeto é organizada da seguinte forma:
    - `cd nome-do-repositorio`
 
 2. **Configuração do Banco de Dados:**
-   - No arquivo `appsettings.json`, configure a string de conexão do PostgreSQL.
-   - Rode o projeto para que a configuração do Seed crie o banco e popule com os dados básicos.
+   - Configure uma instância dos SQLServer e crie um database.
+   - No arquivo `appsettings.json`, configure a string de conexão do SQLServer de acordo com os parâmetros de acesso da instância e da base de dados criada.
+   - Entre no diretório de infraestrutura da aplicação `cd src/FIAPCloudGames.Infrastructure/` e o comando `Update-Database` para que a configuração das Migrations crie as tabelas e popule com os dados básicos.
 
-3. **Executar a API:**
+4. **Executar a API:**
    - `cd src/FIAPCloudGames.WebAPI/`
    - `dotnet run`
    - Acesse a documentação da API em: http://localhost:5001/swagger

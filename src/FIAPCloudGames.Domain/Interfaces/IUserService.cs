@@ -1,12 +1,7 @@
 ﻿using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.Domain.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FIAPCloudGames.Domain.Services;
+namespace FIAPCloudGames.Domain.Interfaces;
 
 public interface IUserService
 {
@@ -16,7 +11,9 @@ public interface IUserService
 
     Task Delete(int id);
 
-    Task<UserResponse> GetById(int id);
+    Task<UserResponse?> GetById(int id);
+
+    Task<UserResponse?> GetByEmail(string email);
 
     Task<IEnumerable<UserResponse>> GetAll();
 
