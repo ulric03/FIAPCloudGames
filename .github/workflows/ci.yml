@@ -8,21 +8,11 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
-    services:
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          SA_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
-          ACCEPT_EULA: 'Y'
-        ports:
-          - 1433:1433
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -46,16 +36,8 @@ jobs:
     - name: Build solution
       run: dotnet build --no-restore --configuration Release
 
-    - name: Setup test database
-      run: |
-        echo "Waiting for SQL Server to be ready..."
-        timeout 90s bash -c 'until docker exec $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ secrets.SQL_SERVER_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; do sleep 2; done'
-        echo "SQL Server is ready!"
-        
     - name: Run tests
       run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
-      env:
-        ConnectionStrings__DefaultConnection: ${{ env.CONNECTION_STRING }}
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
