@@ -22,11 +22,6 @@ jobs:
           ACCEPT_EULA: 'Y'
         ports:
           - 1433:1433
-        options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ secrets.SQL_SERVER_PASSWORD }}' -Q 'SELECT 1'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
     - name: Checkout code
@@ -53,8 +48,9 @@ jobs:
 
     - name: Setup test database
       run: |
-        # Aguarda SQL Server ficar pronto
-        sleep 30
+        echo "Waiting for SQL Server to be ready..."
+        timeout 90s bash -c 'until docker exec $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ secrets.SQL_SERVER_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; do sleep 2; done'
+        echo "SQL Server is ready!"
         
     - name: Run tests
       run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
@@ -75,4 +71,4 @@ jobs:
     - name: Security Scan
       run: |
         dotnet list package --vulnerable --include-transitive || true
-        echo "Security scan completed"        echo "Security scan completed"
+        echo "Security scan completed"
