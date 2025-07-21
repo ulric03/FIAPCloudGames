@@ -8,7 +8,6 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
   CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
 
 jobs:
@@ -19,12 +18,12 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          SA_PASSWORD: ${{ env.SQL_SERVER_PASSWORD }}
+          SA_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
           ACCEPT_EULA: 'Y'
         ports:
           - 1433:1433
         options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ env.SQL_SERVER_PASSWORD }}' -Q 'SELECT 1'"
+          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ secrets.SQL_SERVER_PASSWORD }}' -Q 'SELECT 1'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -76,4 +75,4 @@ jobs:
     - name: Security Scan
       run: |
         dotnet list package --vulnerable --include-transitive || true
-        echo "Security scan completed"
+        echo "Security scan completed"        echo "Security scan completed"
