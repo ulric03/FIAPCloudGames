@@ -60,6 +60,15 @@ services:
       - fcg-network
     restart: unless-stopped
 
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - fcg-network
+    restart: unless-stopped
+
 volumes:
   sqlserver_data:
   grafana_data:
