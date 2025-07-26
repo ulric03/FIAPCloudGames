@@ -48,6 +48,39 @@ jobs:
         docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
         docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Configure Azure Web App Settings
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        app-settings-json: |
+          [
+            {
+              "name": "ConnectionStrings__DefaultConnection",
+              "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+            },
+            {
+              "name": "Jwt__Key",
+              "value": "${{ secrets.JWT_KEY }}"
+            },
+            {
+              "name": "Jwt__Issuer",
+              "value": "${{ vars.JWT_ISSUER }}"
+            },
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "Production"
+            },
+            {
+              "name": "Serilog__WriteTo__1__Args__uri",
+              "value": "${{ vars.LOKI_URI }}"
+            }
+          ]
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
