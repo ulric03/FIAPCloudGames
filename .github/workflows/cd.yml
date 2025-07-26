@@ -7,7 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  AZURE_WEBAPP_NAME: 'fiap-cloud-games'
+  AZURE_WEBAPP_NAME: '${{ vars.AZURE_WEBAPP_NAME }}'
   DOCKER_IMAGE_NAME: '${{ vars.DOCKER_USERNAME }}/fiap-cloud-games'
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
 
