@@ -5,11 +5,26 @@ using FIAPCloudGames.WebAPI;
 using FIAPCloudGames.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Serilog;
 using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var serviceName = "FIAPCloudGames.API";
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddPrometheusExporter();
+    });
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
@@ -63,6 +78,8 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<FCGContext>("database", tags: new[] { "ready" });
 
 var app = builder.Build();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
