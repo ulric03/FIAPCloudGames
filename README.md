@@ -128,4 +128,4 @@ Este guia descreve como configurar o Grafana para exibir métricas e logs utiliz
 
 ## **10. Avaliação**
 
-- Para feedbacks ou dúvidas utilize o recurso de Issues
+- Para feedbacks ou dúvidas utilize o recurso de Issuesss
