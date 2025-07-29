@@ -68,6 +68,13 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        containerAppName: cloud-games-cont02
+        resourceGroup: FiapCG
+        acrName: myregistry
+        imageToDeploy: docker.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
     - name: Configure Azure Web App Settings
       run: |
