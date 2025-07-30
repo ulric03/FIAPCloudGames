@@ -68,7 +68,16 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Deploy to Azure Container Apps
+        
+    - name: Deploy no Azure Container Apps 01
+      run: |
+        az containerapp update 
+          --name cloud-games-cont02 
+          --resource-group FiapCG 
+          --image docker.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
+          --environment managedEnvironment-FiapCG-a7c8
+          
+    - name: Deploy to Azure Container Apps 02
       uses: azure/container-apps-deploy-action@v1
       with:
         containerAppName: cloud-games-cont02
