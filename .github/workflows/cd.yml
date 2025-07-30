@@ -73,7 +73,7 @@ jobs:
       run: az containerapp update \
           --name cloud-games-cont02 \
           --resource-group FiapCG \
-          --image docker.io/ulric650/fiap-cloud-games:55af1a7567007c74f4180fe249e475419770c0d3
+          --image docker.io/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
  
           
     - name: Deploy to Azure Container Apps 02
