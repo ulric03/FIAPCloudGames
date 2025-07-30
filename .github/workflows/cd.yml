@@ -70,9 +70,9 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Deploy no Azure Container Apps 01
-      run: az containerapp update \
-          --name cloud-games-cont02 \
-          --resource-group FiapCG \
+      run: az containerapp update 
+          --name cloud-games-cont02 
+          --resource-group FiapCG 
           --image docker.io/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
  
           
