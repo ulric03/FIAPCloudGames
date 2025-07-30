@@ -75,7 +75,6 @@ jobs:
           --name cloud-games-cont02 
           --resource-group FiapCG 
           --image docker.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
-          --environment managedEnvironment-FiapCG-a7c8
           
     - name: Deploy to Azure Container Apps 02
       uses: azure/container-apps-deploy-action@v1
