@@ -96,8 +96,8 @@ jobs:
           --environment managedEnvironment-FiapCG-a7c8 
           --image grafana/loki:latest 
           --target-port 3100 
-          --ingress external 
-          --command-line "-config.file=/etc/loki/local-config.yaml" 
+          --ingress external
+          --args "-config.file=/etc/loki/local-config.yaml"
 
       
     
