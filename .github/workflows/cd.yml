@@ -88,7 +88,6 @@ jobs:
           --target-port 9090 
           --ingress external 
           --env-vars PROMETHEUS_CONFIG=/etc/prometheus/prometheus.yml 
-          --volume-mounts name=prometheus-config mount-path=/etc/prometheus 
 
     - name: Deploy Loki
       run: az containerapp create 
@@ -99,7 +98,6 @@ jobs:
           --target-port 3100 
           --ingress external 
           --command-line "-config.file=/etc/loki/local-config.yaml" 
-          --volume-mounts name=loki-config mount-path=/etc/loki
 
       
     
