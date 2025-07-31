@@ -80,7 +80,7 @@ jobs:
           --env-vars ACCEPT_EULA=Y SA_PASSWORD=P@ssw0rdF1@PT3ch MSSQL_PID=Express
 
     - name: Deploy App
-      run: az containerapp update \
+      run: az containerapp update 
           --name cloud-games-cont02 
           --resource-group FiapCG 
           --image ulric650/fiap-cloudgames:latest 
