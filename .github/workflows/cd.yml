@@ -97,7 +97,7 @@ jobs:
           --image grafana/loki:latest 
           --target-port 3100 
           --ingress external
-          --args "-config.file=/etc/loki/local-config.yaml"
+
 
       
     
