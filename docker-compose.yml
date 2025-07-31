@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ulric650/fiap-cloudgames:latest
     ports:
       - "8080:8080"
     environment:
@@ -71,7 +74,9 @@ services:
 
 volumes:
   sqlserver_data:
+    name: sqlserver_data
   grafana_data:
+    name: grafana_data
 
 networks:
   fcg-network:
