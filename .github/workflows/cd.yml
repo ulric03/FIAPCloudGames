@@ -83,7 +83,7 @@ jobs:
       run: az containerapp up 
           --name cloud-games-cont02 
           --resource-group FiapCG 
-          --image ulric650/fiap-cloudgames:latest 
+          --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }}
           --ingress external 
           --target-port 8080 
           --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=sqlserver-app;Database=FIAPCloudGames;User Id=sa;Password=P@ssw0rdF1@PT3ch;TrustServerCertificate=true;"
