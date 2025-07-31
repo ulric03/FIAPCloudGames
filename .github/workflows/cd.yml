@@ -75,12 +75,6 @@ jobs:
           --environment managedEnvironment-FiapCG-a7c8  
           --compose-file-path docker-compose.yml
         
-    - name: Deploy no Azure Container Apps 01
-      run: az containerapp update 
-          --name cloud-games-cont02 
-          --resource-group FiapCG 
-          --image docker.io/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
- 
     - name: Deploy to Azure Container Apps 02
       uses: azure/container-apps-deploy-action@v1
       with:
