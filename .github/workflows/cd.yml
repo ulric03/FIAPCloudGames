@@ -84,9 +84,17 @@ jobs:
           --name cloud-games-cont02 
           --resource-group FiapCG 
           --image ulric650/fiap-cloudgames:latest 
+
+          az containerapp env-var set 
+          --name cloud-games-cont02 
+          --resource-group FiapCG 
+          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=sqlserver-app;Database=FIAPCloudGames;User Id=sa;Password=***;TrustServerCertificate=true;"
+
+          az containerapp ingress update 
+          --name cloud-games-cont02 
+          --resource-group FiapCG 
           --target-port 8080 
-          --ingress external 
-          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=sqlserver-app;Database=FIAPCloudGames;User Id=sa;Password=P@ssw0rdF1@PT3ch;TrustServerCertificate=true;" 
+          --ingress external
 
     - name: Deploy Grafana
       run: az containerapp create 
