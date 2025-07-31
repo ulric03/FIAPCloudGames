@@ -70,35 +70,35 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Deploy Grafana
-      run: az containerapp create \
-          --name grafana-app \
-          --resource-group FiapCG \
-          --environment managedEnvironment-FiapCG-a7c8 \
-          --image grafana/grafana:latest \
-          --target-port 3000 \
-          --ingress external \
+      run: az containerapp create 
+          --name grafana-app 
+          --resource-group FiapCG 
+          --environment managedEnvironment-FiapCG-a7c8 
+          --image grafana/grafana:latest 
+          --target-port 3000 
+          --ingress external 
           --env-vars GF_SECURITY_ADMIN_PASSWORD=admin
 
     - name: Deploy Prometheus
-      run: az containerapp create \
-          --name prometheus-app \
-          --resource-group FiapCG \
-          --environment managedEnvironment-FiapCG-a7c8 \
-          --image prom/prometheus:latest \
-          --target-port 9090 \
-          --ingress external \
-          --env-vars PROMETHEUS_CONFIG=/etc/prometheus/prometheus.yml \
+      run: az containerapp create 
+          --name prometheus-app 
+          --resource-group FiapCG 
+          --environment managedEnvironment-FiapCG-a7c8 
+          --image prom/prometheus:latest 
+          --target-port 9090 
+          --ingress external 
+          --env-vars PROMETHEUS_CONFIG=/etc/prometheus/prometheus.yml 
           --volume-mounts name=prometheus-config mount-path=/etc/prometheus 
 
     - name: Deploy Loki
-      run: az containerapp create \
-          --name loki-app \
-          --resource-group FiapCG \
-          --environment managedEnvironment-FiapCG-a7c8 \
-          --image grafana/loki:latest \
-          --target-port 3100 \
-          --ingress external \
-          --command-line "-config.file=/etc/loki/local-config.yaml" \
+      run: az containerapp create 
+          --name loki-app 
+          --resource-group FiapCG 
+          --environment managedEnvironment-FiapCG-a7c8 
+          --image grafana/loki:latest 
+          --target-port 3100 
+          --ingress external 
+          --command-line "-config.file=/etc/loki/local-config.yaml" 
           --volume-mounts name=loki-config mount-path=/etc/loki
 
       
