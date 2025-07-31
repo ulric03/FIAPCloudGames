@@ -68,13 +68,26 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-    - name: Deploy App
-      run: az containerapp update  
-          --name cloud-games-cont02  
+
+    - name: Deploy sql
+      run: az containerapp create 
+          --name sqlserver-app 
           --resource-group FiapCG 
-          --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }} 
-    
+          --environment managedEnvironment-FiapCG-a7c8 
+          --image mcr.microsoft.com/mssql/server:2022-latest 
+          --target-port 1433 
+          --ingress internal 
+          --env-vars ACCEPT_EULA=Y SA_PASSWORD=P@ssw0rdF1@PT3ch MSSQL_PID=Express
+
+    - name: Deploy App
+      run: az containerapp update \
+          --name cloud-games-cont02 
+          --resource-group FiapCG 
+          --image ulric650/fiap-cloudgames:latest 
+          --target-port 8080 
+          --ingress external 
+          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=sqlserver-app;Database=FIAPCloudGames;User Id=sa;Password=P@ssw0rdF1@PT3ch;TrustServerCertificate=true;" 
+
     - name: Deploy Grafana
       run: az containerapp create 
           --name grafana-app 
