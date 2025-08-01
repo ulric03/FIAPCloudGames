@@ -85,10 +85,10 @@ app.UseOpenTelemetryPrometheusScrapingEndpoint();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwaggerSetup();
-}
+//}
 
 app.UseReDoc(c =>
 {
