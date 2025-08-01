@@ -86,7 +86,7 @@ jobs:
           --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }}
           --ingress external 
           --target-port 8080 
-          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=sqlserver-app;Database=FIAPCloudGames;User Id=sa;Password=P@ssw0rdF1@PT3ch;TrustServerCertificate=true;"
+          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=fiapcloudgamesdlrsu.database.windows.net,1433;Initial Catalog=FIAPCloudGames;Persist Security Info=False;User ID=boss;Password=P@ssw0rdF1@PT3ch;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
 
     - name: Deploy Grafana
