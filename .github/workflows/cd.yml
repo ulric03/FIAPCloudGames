@@ -82,7 +82,7 @@ jobs:
     - name: Deploy App
       run: az containerapp create 
           --name cloud-games-cont02 
-          --resource-group Fase-3 
+          --resource-group "Fase-3" 
           --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }}
           --ingress external 
           --target-port 8080 
