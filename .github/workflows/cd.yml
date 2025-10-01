@@ -80,9 +80,9 @@ jobs:
     #     --env-vars ACCEPT_EULA=Y SA_PASSWORD=P@ssw0rdF1@PT3ch MSSQL_PID=Express
 
     - name: Deploy App
-      run: az containerapp up 
+      run: az containerapp create 
           --name cloud-games-cont02 
-          --resource-group FiapCG 
+          --resource-group Fase-3 
           --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }}
           --ingress external 
           --target-port 8080 
