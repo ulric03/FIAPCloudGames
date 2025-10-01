@@ -69,15 +69,15 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy sql
-      run: az containerapp create 
-          --name sqlserver-app 
-          --resource-group FiapCG 
-          --environment managedEnvironment-FiapCG-a7c8 
-          --image mcr.microsoft.com/mssql/server:2022-latest 
-          --target-port 1433 
-          --ingress internal 
-          --env-vars ACCEPT_EULA=Y SA_PASSWORD=P@ssw0rdF1@PT3ch MSSQL_PID=Express
+    # - name: Deploy sql
+    # run: az containerapp create 
+    #      --name sqlserver-app 
+    #     --resource-group FiapCG 
+    #     --environment managedEnvironment-FiapCG-a7c8 
+    #     --image mcr.microsoft.com/mssql/server:2022-latest 
+    #     --target-port 1433 
+    #     --ingress internal 
+    #     --env-vars ACCEPT_EULA=Y SA_PASSWORD=P@ssw0rdF1@PT3ch MSSQL_PID=Express
 
     - name: Deploy App
       run: az containerapp up 
@@ -86,37 +86,37 @@ jobs:
           --image docker.io/ulric650/fiap-cloud-games:${{ github.sha }}
           --ingress external 
           --target-port 8080 
-          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=fiapcloudgamesdlrsu.database.windows.net,1433;Initial Catalog=FIAPCloudGames;Persist Security Info=False;User ID=boss;Password=P@ssw0rdF1@PT3ch;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+          --env-vars ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__DefaultConnection="Server=fiap-fase-3.database.windows.net,1433;Initial Catalog=FIAPCloudGames;Persist Security Info=False;User ID=FIAPCloudGames;Password=P@ssw0rdF1@PT3ch;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
 
-    - name: Deploy Grafana
-      run: az containerapp create 
-          --name grafana-app 
-          --resource-group FiapCG 
-          --environment managedEnvironment-FiapCG-a7c8 
-          --image grafana/grafana:latest 
-          --target-port 3000 
-          --ingress external 
-          --env-vars GF_SECURITY_ADMIN_PASSWORD=admin
+   # - name: Deploy Grafana
+   #   run: az containerapp create 
+    #      --name grafana-app 
+    #      --resource-group FiapCG 
+   #       --environment managedEnvironment-FiapCG-a7c8 
+   #       --image grafana/grafana:latest 
+   #       --target-port 3000 
+   #       --ingress external 
+   #       --env-vars GF_SECURITY_ADMIN_PASSWORD=admin
 
-    - name: Deploy Prometheus
-      run: az containerapp create 
-          --name prometheus-app 
-          --resource-group FiapCG 
-          --environment managedEnvironment-FiapCG-a7c8 
-          --image prom/prometheus:latest 
-          --target-port 9090 
-          --ingress external 
-          --env-vars PROMETHEUS_CONFIG=/etc/prometheus/prometheus.yml 
+   # - name: Deploy Prometheus
+   #   run: az containerapp create 
+   #       --name prometheus-app 
+   #       --resource-group FiapCG 
+   #       --environment managedEnvironment-FiapCG-a7c8 
+   #       --image prom/prometheus:latest 
+   #       --target-port 9090 
+   #       --ingress external 
+   #       --env-vars PROMETHEUS_CONFIG=/etc/prometheus/prometheus.yml 
 
-    - name: Deploy Loki
-      run: az containerapp create 
-          --name loki-app 
-          --resource-group FiapCG 
-          --environment managedEnvironment-FiapCG-a7c8 
-          --image grafana/loki:latest 
-          --target-port 3100 
-          --ingress external
+   # - name: Deploy Loki
+   #   run: az containerapp create 
+   #       --name loki-app 
+   #       --resource-group FiapCG 
+   #       --environment managedEnvironment-FiapCG-a7c8 
+   #       --image grafana/loki:latest 
+   #       --target-port 3100 
+   #       --ingress external
 
 
       
